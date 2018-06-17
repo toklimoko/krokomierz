@@ -40,6 +40,7 @@ public class MainActivity extends Activity implements SensorEventListener { //im
     private Sensor myAccelerometer; //obiekt klasy Sensor (czyli czujnik)
     private boolean pomiar = false; //czy nacisnieto przycisk Start?
     private boolean marker = false;
+    private int probki = 0;
 
     private TextView poleAx, poleAy, poleAz, poleAt, poleLK;
     private String string = "T:" + "\t" + "X:" + "\t" + "Y:" + "\t" + "Z:" + "\n"; //naglowek do txt
@@ -83,10 +84,12 @@ public class MainActivity extends Activity implements SensorEventListener { //im
     private float oldAY;
     private float oldAZ;
     private boolean firstUpdate = true; //true = pierwsza zmiana przyspieszenia
-    private final float shakeThreshold = 2f; //próg klasyfikacji jako wstrząs
+    private final float shakeThreshold = 1.5f; //próg klasyfikacji jako wstrząs
     private boolean shakeInitiated = false; //czy wstrzas zostal rozpoczety (ruch w jednym kierunku)
 
     private int counter;
+
+    private int czestotliwosc = 20;  //10 Hz
 
     Button buttonStart, buttonStop, buttonSave, buttonReset;
 
@@ -148,68 +151,71 @@ public class MainActivity extends Activity implements SensorEventListener { //im
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) { //gdy czujnik wykryje zmiane
 
+        probki += 1;
 
-        if (pomiar) {
+        if (probki == czestotliwosc) {
 
-            int sensorType = sensorEvent.sensor.getType();
+            if (pomiar) {
 
-            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) ;
+                int sensorType = sensorEvent.sensor.getType();
 
-            //if do ustalenia prawidlowego czasu - zapis pierwszego odczytu i od kolejnych odejmowanie jego wartosci - czas startuje dzieki temu od zera
-            if (licznik == 0) {
-                startTime = sensorEvent.timestamp;
-            }
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) ;
 
-            aX = sensorEvent.values[0]; //skladowa X przyspieszenia
-            aY = sensorEvent.values[1]; //skladowa Y przyspieszenia
-            aZ = sensorEvent.values[2]; //skladowa Z przyspieszenia
+                //if do ustalenia prawidlowego czasu - zapis pierwszego odczytu i od kolejnych odejmowanie jego wartosci - czas startuje dzieki temu od zera
+                if (licznik == 0) {
+                    startTime = sensorEvent.timestamp;
+                }
 
-            aT = (sensorEvent.timestamp - startTime) * NS2S; //timestamp z konwersją na sekundy
+                aX = sensorEvent.values[0]; //skladowa X przyspieszenia
+                aY = sensorEvent.values[1]; //skladowa Y przyspieszenia
+                aZ = sensorEvent.values[2]; //skladowa Z przyspieszenia
 
-            poleAx = (TextView) findViewById(R.id.poleAx);
-            poleAy = (TextView) findViewById(R.id.poleAy);
-            poleAz = (TextView) findViewById(R.id.poleAz);
-            poleAt = (TextView) findViewById(R.id.poleAt);
-            poleLK = (TextView) findViewById(R.id.poleLK);
+                aT = (sensorEvent.timestamp - startTime) * NS2S; //timestamp z konwersją na sekundy
 
-
-            //wyswietlanie sformatowanych danych pomiarowych
-            poleAx.setText(String.valueOf(numberFormat.format(aX)));
-            poleAy.setText(String.valueOf(numberFormat.format(aY)));
-            poleAz.setText(String.valueOf(numberFormat.format(aZ)));
-            poleAt.setText(String.valueOf(numberFormat.format(aT)));
-
-            //kolejne wiersze z parametrami - do zapisu w txt
-            string = string + numberFormat.format(aT) + "\t" + numberFormat2.format(aX) + "\t" + numberFormat2.format(aY) + "\t" + numberFormat2.format(aZ) + "\n";
-
-            // dodanie zmiennych do serii
-            xTSeria.add(aT, aX);
-            yTSeria.add(aT, aY);
-            zTSeria.add(aT, aZ);
+                poleAx = (TextView) findViewById(R.id.poleAx);
+                poleAy = (TextView) findViewById(R.id.poleAy);
+                poleAz = (TextView) findViewById(R.id.poleAz);
+                poleAt = (TextView) findViewById(R.id.poleAt);
+                poleLK = (TextView) findViewById(R.id.poleLK);
 
 
-            licznik++;
+                //wyswietlanie sformatowanych danych pomiarowych
+                poleAx.setText(String.valueOf(numberFormat.format(aX)));
+                poleAy.setText(String.valueOf(numberFormat.format(aY)));
+                poleAz.setText(String.valueOf(numberFormat.format(aZ)));
+                poleAt.setText(String.valueOf(numberFormat.format(aT)));
 
-            // umozliwienie wyswietlania wykresu "na biezaco"
-            mrenderer.setXAxisMin(xTSeria.getMaxX() - 2);
-            mrenderer.setXAxisMax(xTSeria.getMaxX());
-            chartView.repaint();
+                //kolejne wiersze z parametrami - do zapisu w txt
+                string = string + numberFormat.format(aT) + "\t" + numberFormat2.format(aX) + "\t" + numberFormat2.format(aY) + "\t" + numberFormat2.format(aZ) + "\n";
+
+                // dodanie zmiennych do serii
+                xTSeria.add(aT, aX);
+                yTSeria.add(aT, aY);
+                zTSeria.add(aT, aZ);
+
+
+                licznik++;
+
+                // umozliwienie wyswietlania wykresu "na biezaco"
+                mrenderer.setXAxisMin(xTSeria.getMaxX() - 2);
+                mrenderer.setXAxisMax(xTSeria.getMaxX());
+                chartView.repaint();
 
 // ALGORYTM POMIARU LICZBY KROKOW:
-            updateAccelParameters(aX, aY, aZ);
+                updateAccelParameters(aX, aY, aZ);
 
-            if ((!shakeInitiated) && isAccelerationChanged()) {
-                shakeInitiated = true;
-            } else if ((shakeInitiated) && isAccelerationChanged()) {
-                executeShakeAction();
+                if ((!shakeInitiated) && isAccelerationChanged()) {
+                    shakeInitiated = true;
+                } else if ((shakeInitiated) && isAccelerationChanged()) {
+                    executeShakeAction();
 
-            } else if ((shakeInitiated) && (!isAccelerationChanged())) {
-                shakeInitiated = false;
+                } else if ((shakeInitiated) && (!isAccelerationChanged())) {
+                    shakeInitiated = false;
+                }
+
             }
-
-
+            probki = 0;
         }
-
     }
 
 
@@ -325,7 +331,7 @@ public class MainActivity extends Activity implements SensorEventListener { //im
 
     public void stopWc(View view) {
         if (pomiar) {
-            buttonStart.setVisibility(View.VISIBLE);
+            buttonStart.setVisibility(View.GONE);
             buttonStop.setVisibility(View.GONE);
             buttonSave.setVisibility(View.VISIBLE);
             buttonReset.setVisibility(View.VISIBLE);
@@ -375,7 +381,7 @@ public class MainActivity extends Activity implements SensorEventListener { //im
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Log.i("My", "******* File not found. Did you" +
+            Log.i("My", "File not found. Did you" +
                     " add a WRITE_EXTERNAL_STORAGE permission to the manifest?");
 
 
