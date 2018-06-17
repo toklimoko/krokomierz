@@ -1,4 +1,4 @@
-package com.tomek.krokomierz;
+package com.tomek.akcelerometr;
 
 import org.junit.Test;
 

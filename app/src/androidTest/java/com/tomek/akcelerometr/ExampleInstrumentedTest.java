@@ -1,4 +1,4 @@
-package com.tomek.krokomierz;
+package com.tomek.akcelerometr;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.tomek.krokomierz", appContext.getPackageName());
+        assertEquals("com.tomek.akcelerometr", appContext.getPackageName());
     }
 }

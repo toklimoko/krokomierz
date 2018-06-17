@@ -1,15 +1,15 @@
 <resources>
-    <string name="app_name">Krokomierz</string>
+    <string name="app_name">Akcelerometr</string>
 
-    <string name="tv1">Krokomierz</string>
+    <string name="tv1">Akcelerometr</string>
 
     <string name="tv2">Składowa X:</string>
     <string name="tv3">Składowa Y:</string>
     <string name="tv4">Składowa Z:</string>
 
-    <string name="btn1">Start</string>
-    <string name="btn2">Stop</string>
-    <string name="btn3">Zapisz</string>
+    <string name="btn1">▷ Start</string>
+    <string name="btn2">□ Stop</string>
+    <string name="btn3">💾 Zapisz</string>
     <string name="btn4">"\u274C" Reset</string>
     <string name="tvt">Czas T:</string>
     <string name="tvlk">Liczba kroków:</string>

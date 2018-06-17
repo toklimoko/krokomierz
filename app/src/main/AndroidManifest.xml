@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tomek.krokomierz">
+    package="com.tomek.akcelerometr">
 
+    <!--
+    w manifescie trzeba ustawic pozwolenia:
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/> - pozwalamy, zeby bylo obslugiwane dzialanie przycisku
+
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> - pozwalamy na zapis na karcie SD
+    -->
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,7 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:screenOrientation="portrait"> <!-- blokada obrotu ekranu -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
